@@ -22,7 +22,6 @@ import java.time.LocalTime;
 public class BankService {
     private final IUserRepository userRepository;
     private final NotificationServiceFactory notificationServiceFactory;
-//    private INotificationService iNotificationService;
 
 
     public int registerUser(RegisterUserRequest registerUserRequest) {
@@ -31,28 +30,26 @@ public class BankService {
         return createdUser.getUserId();
     }
 
-    public String getBalance(int userId) throws UserNotFoundException {
-//        INotificationService iNotificationService;
+    public double getBalance(int userId) throws UserNotFoundException {
         final User user = userRepository.getAUser(userId);
         INotificationService iNotificationService = notificationServiceFactory.getNotificationService(user.getNotificationChannel());
-        iNotificationService.sendNotification(); // it would handle either sms
-        //System.out.println("LOG: " + LocalTime.now() + " Id: " + userId + " CheckedBalance");
-        return String.format("Mr %s,\nYour current balance is %.2f.\nSent via %s.", user.getName(), user.getBalance(), user.getNotificationChannel());
+        iNotificationService.sendNotification();
+        log.info(String.format("User ID %d checked balance %s", user.getUserId(), user.getBalance()));
+        return user.getBalance();
     }
 
     public User getAUser(int userId) throws UserNotFoundException {
         return userRepository.getAUser(userId);
     }
 
-    public String transfer(TransactionRequest transactionRequest) throws UserNotFoundException, InsufficientBalanceException {
+    public boolean transfer(TransactionRequest transactionRequest) throws UserNotFoundException, InsufficientBalanceException {
         final User fromUser = userRepository.getAUser(transactionRequest.getFromAccId());
         if (fromUser.getBalance() >= transactionRequest.getAmount()) {
             final User toUser = userRepository.getAUser(transactionRequest.getToAccId());
             fromUser.setBalance(fromUser.getBalance() - transactionRequest.getAmount());
             toUser.setBalance(toUser.getBalance() + transactionRequest.getAmount());
-            //System.out.printf("LOG:%s.TransactionSuccessful.Amount %.2f.From %d.To %d%n", LocalTime.now(), transactionRequest.getAmount(), fromUser.getUserId(), toUser.getUserId());
             log.info(String.format("Transaction from %d acc to %d, value : %s", transactionRequest.getFromAccId(), transactionRequest.getToAccId(), transactionRequest.getAmount()));
-            return String.format("Transaction successful. Amount of %.2f, transferred from %d to %d", transactionRequest.getAmount(), fromUser.getUserId(), toUser.getUserId());
+            return true;
         } else {
             throw new InsufficientBalanceException(String.format("User id %d, does not have sufficient balance", fromUser.getUserId()));
         }

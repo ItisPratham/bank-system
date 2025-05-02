@@ -25,7 +25,7 @@ public class BankController {
     @GetMapping("/getBalance/{userId}")
     public ResponseEntity<String> getBalance(@PathVariable("userId") int userId){
         try {
-            return ResponseEntity.ok(bankService.getBalance(userId));
+            return ResponseEntity.ok(String.format("Balance : %s", bankService.getBalance(userId)));
         }
         catch (UserNotFoundException e){
             return ResponseEntity.status(404).body(null);
@@ -38,7 +38,7 @@ public class BankController {
     @PostMapping("/transact")
     public ResponseEntity<String> transact(@RequestBody TransactionRequest transactionRequest){
         try {
-            return ResponseEntity.ok(bankService.transfer(transactionRequest));
+            return ResponseEntity.ok(String.format("Transaction completed:%s", bankService.transfer(transactionRequest)));
         }
         catch (UserNotFoundException e){
             return ResponseEntity.status(404).body(null);
