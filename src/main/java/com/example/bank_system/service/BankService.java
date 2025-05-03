@@ -4,18 +4,15 @@ import com.example.bank_system.dto.request.RegisterUserRequest;
 import com.example.bank_system.dto.request.TransactionRequest;
 import com.example.bank_system.exception.InsufficientBalanceException;
 import com.example.bank_system.exception.UserNotFoundException;
-import com.example.bank_system.model.NotificationChannel;
 import com.example.bank_system.model.User;
 import com.example.bank_system.repository.IUserRepository;
 import com.example.bank_system.service.factory.NotificationServiceFactory;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -34,7 +31,7 @@ public class BankService {
     public double getBalance(int userId) throws UserNotFoundException, MessagingException {
         final User user = userRepository.getAUser(userId);
         INotificationService iNotificationService = notificationServiceFactory.getNotificationService(user.getNotificationChannel());
-        iNotificationService.sendNotification();
+        iNotificationService.sendNotification(String.format("Hello %s,\nYou checked your balance\nBalance: %s\nTime: %s", user.getName(), user.getBalance(), LocalDateTime.now()));
         log.info(String.format("User ID %d checked balance %s", user.getUserId(), user.getBalance()));
         return user.getBalance();
     }
