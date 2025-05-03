@@ -16,8 +16,6 @@ public class NotificationServiceFactory {
     private final SmsService smsService;
     private final EmailService emailService;
 
-
-
     public INotificationService getNotificationService(NotificationChannel notificationChannel) {
         return switch (notificationChannel) {
             case SMS -> smsService;
