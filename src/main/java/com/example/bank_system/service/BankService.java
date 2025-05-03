@@ -8,6 +8,7 @@ import com.example.bank_system.model.NotificationChannel;
 import com.example.bank_system.model.User;
 import com.example.bank_system.repository.IUserRepository;
 import com.example.bank_system.service.factory.NotificationServiceFactory;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class BankService {
         return createdUser.getUserId();
     }
 
-    public double getBalance(int userId) throws UserNotFoundException {
+    public double getBalance(int userId) throws UserNotFoundException, MessagingException {
         final User user = userRepository.getAUser(userId);
         INotificationService iNotificationService = notificationServiceFactory.getNotificationService(user.getNotificationChannel());
         iNotificationService.sendNotification();
