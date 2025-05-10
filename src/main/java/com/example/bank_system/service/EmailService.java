@@ -16,12 +16,12 @@ public class EmailService implements INotificationService{
     private JavaMailSender mailSender;
 
     @Override
-    public void sendNotification() throws MessagingException {
+    public void sendNotification(String msg, String to, String subject) throws MessagingException {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo("radibkar32@gmail.com");
-            message.setSubject("ACCOUNT ACCESSED TEST");
-            message.setText("BALANCE CHECKED");
+            message.setTo(to);
+            message.setSubject(subject);
+            message.setText(msg);
             mailSender.send(message);
             log.info("EMAIL sent");
         } catch (MailException e) {

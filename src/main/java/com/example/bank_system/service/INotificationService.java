@@ -5,6 +5,6 @@ import jakarta.mail.MessagingException;
 public interface INotificationService {
 
 
-    void sendNotification() throws MessagingException;
+    void sendNotification(String msg, String to, String subject) throws MessagingException;
 
 }
