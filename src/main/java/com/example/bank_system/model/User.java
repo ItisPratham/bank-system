@@ -12,14 +12,22 @@ public class User {
     private final int userId;
     private final String name;
     private double balance;
+    private final String email;
+    private final String number;
     private NotificationChannel notificationChannel;
 
     @Builder
-    public User(final String name, final double balance, final NotificationChannel notificationChannel) {
+    public User(final String name, final double balance, final String email, final String number, final NotificationChannel notificationChannel) {
+        this.email = email;
+        this.number = number;
         this.userId = count++;
         this.name = name;
         this.balance = balance;
         this.notificationChannel = notificationChannel;
+    }
+
+    public String channel() {
+        return getNotificationChannel() == NotificationChannel.EMAIL ? getEmail() : getNumber();
     }
 
 }

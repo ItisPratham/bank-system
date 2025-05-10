@@ -21,8 +21,14 @@ public class BankController {
 
     @PostMapping("/registerUser")
     public ResponseEntity<String> registerUser(@RequestBody RegisterUserRequest registerUserRequest){
-        int accId = bankService.registerUser(registerUserRequest);
-        return ResponseEntity.ok(String.format("User created with Id: %d", accId));
+        try {
+            int accId = 0;
+            accId = bankService.registerUser(registerUserRequest);
+            return ResponseEntity.ok(String.format("User created with Id: %d", accId));
+        } catch (MessagingException e) {
+            log.error("Message sent failure ", e);
+            return ResponseEntity.status(502).body("Message failure");
+        }
     }
 
     @GetMapping("/getBalance/{userId}")
@@ -31,6 +37,7 @@ public class BankController {
             return ResponseEntity.ok(String.format("Balance : %s", bankService.getBalance(userId)));
         }
         catch (UserNotFoundException e){
+            log.error("User not found ", e);
             return ResponseEntity.status(404).body(null);
         }
         catch (MessagingException e){
@@ -38,6 +45,7 @@ public class BankController {
             return ResponseEntity.status(502).body("Message failure");
         }
         catch (Exception e){
+            log.error("Error: ", e);
             return ResponseEntity.status(500).body(null);
         }
     }
@@ -48,13 +56,23 @@ public class BankController {
             return ResponseEntity.ok(String.format("Transaction completed:%s", bankService.transfer(transactionRequest)));
         }
         catch (UserNotFoundException e){
+            log.error("User not found ", e);
             return ResponseEntity.status(404).body(null);
         }
         catch (InsufficientBalanceException e){
+            log.error("Insufficient balance ", e);
             return ResponseEntity.status(400).body(e.getMessage());
         }
+        catch (MessagingException e){
+            log.error("Message sent failure ", e);
+            return ResponseEntity.status(502).body("Message failure");
+        }
         catch (Exception e){
+            log.error("Error: ", e);
             return ResponseEntity.status(500).body(null);
         }
     }
 }
+// improve email service. Email should be sent on transaction, transfer as well as creation.
+// take email input from user during creation.
+// same can be done with sms, although not now.
